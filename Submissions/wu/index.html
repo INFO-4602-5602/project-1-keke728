@@ -105,7 +105,24 @@
            .attr("stroke", "purple")
            .attr("stroke-width",1)
            .attr("cx", function(d){return xVal(d.x);})
-           .attr("cy", function(d){return yVal(d.y);});
+           .attr("cy", function(d){return yVal(d.y);})
+           // Part four Interaction
+             .on("mouseover", function(d,i){
+               d3.select(this)
+                 .transition()
+                 .duration(100)
+                 .attr("r", 15)
+                 .style("fill", "green");})
+             .on("mouseout", function(d,i){
+               d3.select(this)
+                 .transition()
+                 .duration(100)
+                 .attr("r",7)
+                 .style("fill", "yellow");})
+             .on("click", function(d){
+               d3.select("#scatterLabel")
+                 .text("X: "+d.x+"  "+ " Y: " + d.y);
+             });
 
         //Add the X axis
         svg.append("g")
@@ -179,12 +196,14 @@
               .data(data)
               .enter()
               .append("circle")
-              .attr("r", 5)
+              .attr("r", 7)
               .attr("fill", "yellow")
               .attr("stroke", "purple")
               .attr("stroke-width",1)
               .attr("cx", function(d){return x(d.x);})
               .attr("cy", function(d){return y(d.y);});
+
+
 
           //Add the X axis
           svg.append("g")
@@ -196,9 +215,7 @@
           svg.append("g")
              .attr("stroke-width", 2)
              .call(d3.axisLeft(y));
-        });
-
-
+      });
 
 
         // Put your part five code here ***********************
