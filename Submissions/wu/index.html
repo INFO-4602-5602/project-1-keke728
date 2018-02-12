@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>Project 0</title>
+<link rel="stylesheet" type="text/css" href="project1.css"></link>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!--Put your D3 import statement between these two lines-->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+<!--Put your D3 import statement between these two lines-->
+</head>
+
+<body>
+	<div id="partOne">
+        <h1>Part One: </h1>
+	</div>
+
+    <div id="partTwo">
+        <h1>Part Two: </h1>
+        <div id="scatterplot">
+            <p id="scatterLabel"></p>
+        </div>
+	</div>
+
+    <div id="partThree">
+        <h1>Part Three &amp; Four: </h1>
+        <div id="linegraph">
+        </div>
+	</div>
+
+    <div id="partFive">
+        <h1>Part Five: </h1>
+        <div id="scatterplotSet">
+        </div>
+	</div>
+
+    <script type="text/javascript">
+        // Put your part one code here ***********************
+        d3.csv("data/anscombe_I.csv", function(data) {
+          checkDataset(data);
+        });
+        d3.csv("data/anscombe_II.csv", function(data){
+          checkDataset(data);
+        });
+        d3.csv("data/anscombe_III.csv", function(data){
+          checkDataset(data);
+        });
+        d3.csv("data/anscombe_IV.csv", function(data){
+          checkDataset(data);
+        });
+
+        // Leave this to test your data uploading. All data uploading should be above this line
+        function checkDataset(dataset) {
+            if (dataset.length == 11)
+                $("#partOne").append("<p>data loaded correctly</p>");
+            else
+                $("#partOne").append("<p>data loaded incorrectly. Try using the debugger to help you find the bug!</p>");
+        }
+
+
+        // Put your part two code here ***********************
+
+        // Set dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom:30, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Set the ranges
+        var xVal = d3.scaleLinear().range([0, width]);
+            yVal = d3.scaleLinear().range([height, 0]);
+
+       // Append the svg object to partTwo div
+       var svg = d3.select("#scatterplot")
+                   .append("svg")
+                   .attr("width", width + margin.left + margin.right)
+                   .attr("height", height + margin.top + margin.bottom)
+                   .append("g")
+                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
+
+      //Load dataset
+      d3.csv("data/anscombe_II.csv", function(error, data) {
+        if(error) throw error;
+
+        //Format the data
+        data.forEach(function(d){
+          d.x = parseFloat(d.x);
+          d.y = parseFloat(d.y);
+        });
+
+        //Scale the range of the dataset
+        xVal.domain([0, d3.max(data, function(d) { return d.x; })]);
+        yVal.domain([0, d3.max(data, function(d) { return d.y; })]);
+
+        //Add scatterplot
+        svg.selectAll("circle")
+           .data(data)
+           .enter()
+           .append("circle")
+           .attr("r", 10)
+           .attr("fill", "yellow")
+           .attr("stroke", "purple")
+           .attr("stroke-width",1)
+           .attr("cx", function(d){return xVal(d.x);})
+           .attr("cy", function(d){return yVal(d.y);});
+
+        //Add the X axis
+        svg.append("g")
+           .attr("transform", "translate(0," + height + ")")
+           .attr("stroke-width", 2)
+           .call(d3.axisBottom(xVal));
+
+        //Add the Y aixs
+        svg.append("g")
+           .attr("stroke-width", 2)
+           .call(d3.axisLeft(yVal));
+      });
+
+
+
+
+
+
+
+
+
+
+        // Put your part three & four code here ***********************
+
+        // Put your part five code here ***********************
+
+    </script>
+</body>
+
+
+</html>
