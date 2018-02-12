@@ -7,7 +7,13 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
 <!--Put your D3 import statement between these two lines-->
 </head>
-
+<style>
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-widthL 2px;
+}
+</style>
 <body>
 	<div id="partOne">
         <h1>Part One: </h1>
@@ -58,10 +64,20 @@
 
         // Put your part two code here ***********************
 
+        //Load dataset
+        d3.csv("data/anscombe_II.csv", function(error, data) {
+        if(error) throw error;
+
+        //Format the data
+        data.forEach(function(d){
+          d.x = parseFloat(d.x);
+          d.y = parseFloat(d.y);
+        });
+
         // Set dimensions and margins of the graph
         var margin = {top: 20, right: 20, bottom:30, left: 50},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            width = 600 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
 
         // Set the ranges
         var xVal = d3.scaleLinear().range([0, width]);
@@ -75,26 +91,16 @@
                    .append("g")
                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
 
-      //Load dataset
-      d3.csv("data/anscombe_II.csv", function(error, data) {
-        if(error) throw error;
-
-        //Format the data
-        data.forEach(function(d){
-          d.x = parseFloat(d.x);
-          d.y = parseFloat(d.y);
-        });
-
         //Scale the range of the dataset
-        xVal.domain([0, d3.max(data, function(d) { return d.x; })]);
-        yVal.domain([0, d3.max(data, function(d) { return d.y; })]);
+        xVal.domain([2, 2 + d3.max(data, function(d) { return d.x; })]);
+        yVal.domain([2, 2 + d3.max(data, function(d) { return d.y; })]);
 
         //Add scatterplot
         svg.selectAll("circle")
            .data(data)
            .enter()
            .append("circle")
-           .attr("r", 10)
+           .attr("r", 8)
            .attr("fill", "yellow")
            .attr("stroke", "purple")
            .attr("stroke-width",1)
@@ -114,15 +120,86 @@
       });
 
 
-
-
-
-
-
-
-
-
         // Put your part three & four code here ***********************
+
+        //Load dataset
+        d3.csv("data/anscombe_II.csv", function(error, data) {
+          if(error) throw error;
+
+          // Format the dataset (string - number)
+          data.forEach(function(d){
+            d.x = +d.x;
+            d.y = +d.y;
+          });
+
+          // Set dimensions and margins of the graph
+          var margin = {top: 20, right: 20, bottom:30, left: 50},
+              width = 600 - margin.left - margin.right,
+              height = 400 - margin.top - margin.bottom;
+
+          // Set the ranges
+           var x = d3.scaleLinear().range([0, width]);
+               y = d3.scaleLinear().range([height, 0]);
+
+          //Scale the range of the dataset
+              x.domain([d3.min(data, function(d) { return d.x;}), d3.max(data, function(d){return d.x;}) +1 ]);
+              y.domain([0, d3.max(data, function(d) { return d.y; }) +1 ]);
+
+          //Sort dataset
+          data.sort(function(a,b){
+            return d3.ascending(a.x, b.x);
+          });
+
+          //Define the line
+           var valueline = d3.line()
+                             .x(function(d){ return x(d.x); })
+                             .y(function(d){ return y(d.y); })
+                             .curve(d3.curveLinear);
+
+          // Append the svg object to part Three & Four div
+           var svg = d3.select("#linegraph")
+                       .append("svg")
+                       .attr("width", width + margin.left + margin.right)
+                       .attr("height", height + margin.top + margin.bottom)
+                       .append("g")
+                       .attr("transform", "translate(" + margin.left + "," + margin.top + ")" );
+
+        //Add the valueline path
+           svg.append("g")
+              .append("path")
+              .data([data])
+              .attr("class", "line")
+              .attr("d", valueline)
+              .attr("fill", "none")
+              .attr("stroke-width",3)
+              .attr("stroke", "green");
+
+           //Add scatterplot
+           svg.selectAll("circle")
+              .data(data)
+              .enter()
+              .append("circle")
+              .attr("r", 5)
+              .attr("fill", "yellow")
+              .attr("stroke", "purple")
+              .attr("stroke-width",1)
+              .attr("cx", function(d){return x(d.x);})
+              .attr("cy", function(d){return y(d.y);});
+
+          //Add the X axis
+          svg.append("g")
+             .attr("transform", "translate(0," + height + ")")
+             .attr("stroke-width", 2)
+             .call(d3.axisBottom(x));
+
+          //Add the Y aixs
+          svg.append("g")
+             .attr("stroke-width", 2)
+             .call(d3.axisLeft(y));
+        });
+
+
+
 
         // Put your part five code here ***********************
 
